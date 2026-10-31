@@ -1,0 +1,66 @@
+# Samir's free self-hosted n8n — one-click Render Blueprint.
+# Deploy: Render Dashboard -> New -> Blueprint -> connect the samir-n8n repo.
+# Fill the 6 empty values (Neon Postgres + your login) when prompted.
+services:
+  - type: web
+    name: samir-n8n
+    runtime: image
+    image:
+      url: docker.io/n8nio/n8n:latest
+    plan: free
+    region: frankfurt
+    numInstances: 1
+    healthCheckPath: /healthz
+    # Render injects $PORT (default 10000); n8n must listen on it.
+    dockerCommand: sh -c "N8N_PORT=$PORT n8n start"
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: GENERIC_TIMEZONE
+        value: Asia/Kathmandu
+      - key: TZ
+        value: Asia/Kathmandu
+      - key: N8N_PROTOCOL
+        value: https
+      # Paste your service's onrender.com hostname after first deploy
+      # (needed for correct webhook URLs), e.g. samir-n8n.onrender.com
+      - key: N8N_HOST
+        sync: false
+      # Paste https://<same-host> after first deploy
+      - key: WEBHOOK_URL
+        sync: false
+      # Auto-generated once by Render and kept secret. NEVER change it
+      # afterwards or all saved credentials become unreadable.
+      - key: N8N_ENCRYPTION_KEY
+        generateValue: true
+      # ---- Neon Postgres (free) — workflows & credentials survive restarts ----
+      - key: DB_TYPE
+        value: postgresdb
+      - key: DB_POSTGRESDB_HOST
+        sync: false
+      - key: DB_POSTGRESDB_PORT
+        value: 5432
+      - key: DB_POSTGRESDB_DATABASE
+        sync: false
+      - key: DB_POSTGRESDB_USER
+        sync: false
+      - key: DB_POSTGRESDB_PASSWORD
+        sync: false
+      - key: DB_POSTGRESDB_SSL_ENABLED
+        value: true
+      # ---- Gate the editor with a login you choose ----
+      - key: N8N_BASIC_AUTH_ACTIVE
+        value: true
+      - key: N8N_BASIC_AUTH_USER
+        sync: false
+      - key: N8N_BASIC_AUTH_PASSWORD
+        sync: false
+      # ---- "More powerful than cloud": unlimited runs, prune old ones ----
+      - key: EXECUTIONS_DATA_PRUNE
+        value: true
+      - key: EXECUTIONS_DATA_MAX_AGE
+        value: 168
+      - key: N8N_DEFAULT_BINARY_DATA_MODE
+        value: filesystem
+      - key: N8N_COMMUNITY_PACKAGES_ENABLED
+        value: true

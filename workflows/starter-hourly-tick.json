@@ -1,0 +1,28 @@
+{
+  "name": "Starter — hourly tick",
+  "nodes": [
+    {
+      "parameters": { "rule": { "interval": [ { "field": "hours", "hoursInterval": 1 } ] } },
+      "id": "sched-1",
+      "name": "Every hour",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: { time: new Date().toISOString(), note: 'n8n is alive — unlimited executions, zero subscription' } }];"
+      },
+      "id": "code-1",
+      "name": "Tick",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300]
+    }
+  ],
+  "connections": {
+    "Every hour": { "main": [ [ { "node": "Tick", "type": "main", "index": 0 } ] ] }
+  },
+  "active": false,
+  "settings": { "timezone": "Asia/Kathmandu" }
+}
